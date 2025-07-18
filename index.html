@@ -174,7 +174,31 @@
         .plus-button:hover {
             background-color: #0056b3;
         }
+       
+	/* Hide edit button until an entry is selected */
+       .edit-button {
+	       display: none;
+	       position: absolute;
+	       bottom: 60px;           /* sits 50px above the plus button */
+	       left: 10px;
+	       font-size: 1.5em;
+	       background-color: #28a745;
+	       color: white;
+	       border: none;
+	       border-radius: 50%;
+	       width: 40px;
+	       height: 40px;
+	       display: flex;
+	       justify-content: center;
+	       align-items: center;
+	       cursor: pointer;
+	       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+	       z-index: 3;
+       }
 
+       .edit-button:hover {
+	       background-color: #218838;
+       }
         footer {
             margin-top: 20px;
             text-align: center;
@@ -220,6 +244,8 @@
     <button type="submit">Submit</button>
 </form>
 
+    <!-- Edit Button (hidden by default) -->
+    <button class="edit-button" onclick="openEditForm()">✎</button>
 
     <!-- Plus Button -->
     <button class="plus-button" onclick="toggleForm()">+</button>
@@ -230,8 +256,114 @@
     </footer>
 </body>
 <script>
+	let entries         = [ /* …existing seed data… */ ];
+	let currentIndex    = null;    // index of the selected entry
+	let isEditing       = false;   // mode flag
 
-    const data = [
+	const ddl           = document.getElementById("customDropdown");
+	const searchInput   = document.getElementById("searchInput");
+	const detailsCol    = document.getElementById("detailsColumn");
+	const selectedEl    = document.getElementById("selectedDetails");
+	const form          = document.getElementById("newEntryForm");
+	const ddContainer   = document.getElementById("dropdownContainer");
+	const plusBtn       = document.querySelector(".plus-button");
+	const editBtn       = document.querySelector(".edit-button");
+	
+	// Render dropdown (unchanged)
+	function renderDropdown(list) {
+		ddl.innerHTML = "";
+		list.forEach((item, idx) => {
+			const li = document.createElement("li");
+			li.textContent = item.name + " — " + item.title;
+			li.dataset.index = idx;
+			li.addEventListener("click", () => showDetails(idx));
+			ddl.appendChild(li);
+		});
+	}
+
+	// Filter logic (unchanged)
+	function filterDropdown() {
+		const term = searchInput.value.toLowerCase();
+		renderDropdown(entries.filter(e =>
+			e.name.toLowerCase().includes(term) ||
+			e.title.toLowerCase().includes(term) ||
+			e.department.toLowerCase().includes(term)
+					     ));
+	}
+
+	// Show details & enable edit button
+	function showDetails(idx) {
+		currentIndex = idx;
+		const e = entries[idx];
+		selectedEl.innerHTML = Object.entries(e)
+			.map(([k, v]) => `<p><strong>${k}:</strong> ${v || "—"}</p>`)
+			.join("");
+		detailsCol.style.display = "block";
+		editBtn.style.display = "flex";   // reveal the edit button
+	}
+
+	// Open form for adding
+	function openAddForm() {
+		isEditing = false;
+		form.reset();
+		form.style.display      = "flex";
+		ddContainer.style.display = "none";
+	}
+
+	// Open form for editing
+	function openEditForm() {
+		if (currentIndex === null) {
+			return alert("Please select an entry first.");
+		}
+		isEditing = true;
+		const e = entries[currentIndex];
+
+		// Populate inputs
+		Object.keys(e).forEach(key => {
+			const input = document.getElementById("entry" + key.charAt(0).toUpperCase() + key.slice(1)
+							     );
+			if (input) input.value = e[key];
+		});
+
+		form.style.display        = "flex";
+		ddContainer.style.display = "none";
+	}
+
+	// Handle form submission (add vs. edit)
+	form.addEventListener("submit", function(ev) {
+		ev.preventDefault();
+		const data = {};
+		Array.from(this.elements).forEach(inp => {
+			if (inp.id && inp.value.trim() !== "") {
+				const key = inp.id.replace("entry", "")
+					.replace(/^\w/, c => c.toLowerCase());
+				data[key] = inp.value.trim();
+			}
+		});
+
+		if (isEditing && currentIndex !== null) {
+			entries[currentIndex] = data;
+		} else {
+			entries.push(data);
+		}
+
+		// Reset UI
+		form.style.display        = "none";
+		ddContainer.style.display = "flex";
+		editBtn.style.display     = "none";
+		currentIndex = null;
+
+		renderDropdown(entries);
+	});
+	
+	// Wire up plus button
+	plusBtn.addEventListener("click", openAddForm);
+
+	// Initialize
+	renderDropdown(entries);
+
+
+	const data = [
         {
             "Name": "Pdfl J. Mffff",
             "Title": "Master",
@@ -248,7 +380,7 @@
             "MobilePhone": "(347) 356-7886",
             "Pass": ""
         }
-    ];
+	];
 
 	    function toggleForm() {
 	    const form = document.getElementById('newEntryForm'); // The new entry form
