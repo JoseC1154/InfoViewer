@@ -1,0 +1,351 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Viewer</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            filter: grayscale(100%);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .dropdown-container {
+	    display: flex; /* Enables flexbox layout for inner content */
+	    flex-direction: column; /* Stacks child elements vertically */
+	    justify-content: space-between; /* Evenly spaces content within */
+	    align-items: center; /* Centers content horizontally */
+	    width: 350px; /* Fixed width of the container */
+	    padding: 20px; /* Space inside the container */
+	    border: 2px solid #ccc; /* Light gray border for visibility */
+	    border-radius: 12px; /* Rounded corners */
+	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+	    background-color: #f9f9f9; /* Light gray background for contrast */
+	    position: absolute; /* Allows dynamic positioning on the page */
+	    top: 50%; /* Vertically centers the container */
+	    left: 50%; /* Horizontally centers the container */
+	    transform: translate(-50%, -50%); /* Ensures precise centering */
+	    z-index: 1; /* Places the container behind the form (when shown) */
+	    transition: all 0.3s ease-in-out; /* Smooth transitions when moved */
+	    overflow: hidden; /* Prevents content from overflowing */
+	    box-sizing: border-box; /* Ensures padding/borders are part of width/height */
+	}
+
+        .custom-dropdown {
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            margin-bottom: 20px;
+            box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            list-style: none;
+        }
+
+        .custom-dropdown li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .custom-dropdown li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .details-column {
+            width: 100%;
+            border-left: 2px solid #ccc;
+            padding-left: 20px;
+            margin-left: 10px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 0 0 20px 0;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+	.form-container {
+	    display: none; /* Hide the form by default */
+	    flex-direction: column; /* Stack elements vertically */
+	    justify-content: start; /* Align content to the top */
+	    align-items: center; /* Center elements horizontally */
+	    width: 350px; /* Set the form width */
+	    height: 600px; /* Limit the height */
+	    padding: 10px; /* Add space inside the form */
+	    border: 2px solid #ccc; /* Light border for visibility */
+	    border-radius: 12px; /* Rounded corners for aesthetic look */
+	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+	    background-color: #f9f9f9; /* Light gray background */
+	    overflow-y: auto; /* Enable scrolling for overflow content */
+	    position: absolute; /* Allow dynamic positioning */
+	    top: 50%; /* Center vertically */
+	    left: 50%; /* Center horizontally */
+	    transform: translate(-50%, -50%); /* Center the form on the screen */
+	    z-index: 2; /* Ensure it appears above other elements */
+	    transition: all 0.3s ease-in-out; /* Smooth animations for changes */
+	    box-sizing: border-box; /* Include padding and border in dimensions */
+	}
+
+
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Plus Button */
+        .plus-button {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 1.5em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .plus-button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2>Info Viewer</h2>
+
+    <!-- Dropdown Container -->
+    <div id="dropdownContainer" class="dropdown-container">
+        <div id="dropdownColumn" class="dropdown-column">
+            <img src="PhoneBoard.png" alt="Phone Board Icon">
+            <input type="text" id="searchInput" placeholder="Start typing to search..." oninput="filterDropdown()">
+            <ul id="customDropdown" class="custom-dropdown"></ul>
+            <p>Search and select a location from the dropdown.</p>
+        </div>
+        <div id="detailsColumn" class="details-column">
+            <h3>Details</h3>
+            <div id="selectedDetails" class="details"></div>
+        </div>
+    </div>
+
+    <!-- New Entry Form -->
+    <form id="newEntryForm" class="form-container">
+    <h3>Add New Entry</h3>
+    <input type="text" id="entryName" placeholder="Name" required>
+    <input type="text" id="entryTitle" placeholder="Title" required>
+    <input type="text" id="entryDepartment" placeholder="Department" required>
+    <input type="text" id="entryLine" placeholder="Line">
+    <input type="text" id="entryResponsibilityCenter" placeholder="Responsibility Center">
+    <input type="text" id="entryLocation" placeholder="Location">
+    <input type="text" id="entryAddress" placeholder="Address">
+    <input type="text" id="entryCityStateZip" placeholder="City/State/ZIP">
+    <input type="text" id="entryConferenceRoom" placeholder="Conference Room">
+    <input type="text" id="entryReceptionDesk" placeholder="Reception Desk">
+    <input type="text" id="entryFax" placeholder="Fax">
+    <input type="text" id="entryOfficePhone" placeholder="Office Phone">
+    <input type="text" id="entryMobilePhone" placeholder="Mobile Phone">
+    <input type="text" id="entryPass" placeholder="Pass">
+    <button type="submit">Submit</button>
+</form>
+
+
+    <!-- Plus Button -->
+    <button class="plus-button" onclick="toggleForm()">+</button>
+
+    <!-- Footer -->
+    <footer>
+        Tools created by Jose Cardona
+    </footer>
+</body>
+<script>
+
+    const data = [
+        {
+            "Name": "Paul J. McPhee",
+            "Title": "Chief Officer",
+            "Department": "Field Operations",
+            "Line": "",
+            "ResponsibilityCenter": "",
+            "Location": "27-17 Jackson Avenue",
+            "Address": "27-17 Jackson Avenue",
+            "City/State/ZIP": "Long Island City, NY 11101",
+            "ConferenceRoom": "(347) 643-7756",
+            "ReceptionDesk": "(347) 643-7661",
+            "Fax": "(347) 643-7771",
+            "OfficePhone": "(347) 643-7664",
+            "MobilePhone": "(347) 672-6316",
+            "Pass": ""
+        }
+    ];
+
+	    function toggleForm() {
+	    const form = document.getElementById('newEntryForm'); // The new entry form
+	    const dropdown = document.getElementById('dropdownContainer'); // The dropdown container
+	
+	    if (form.style.display === "none" || form.style.display === "") {
+	        // Open the form
+	        form.style.display = "flex"; // Make the form visible
+	        form.style.left = "30%"; // Center the form vertically
+	        dropdown.style.left = "calc(30% + 400px)"; // Move dropdown 100px down from its initial position
+	    } else {
+	        // Close the form
+	        form.style.display = "none"; // Hide the form
+	        dropdown.style.left = "50%"; // Reset dropdown to its original vertical position
+	    }
+	}
+
+
+
+    function populateDropdown() {
+        const dropdown = document.getElementById('customDropdown');
+        dropdown.innerHTML = ""; // Clear previous dropdown items
+        data.forEach((entry, index) => {
+            const li = document.createElement('li');
+            li.textContent = entry.Name || `Entry ${index + 1}`;
+            li.dataset.index = index;
+            li.onclick = () => updateDetails(index); // Attach click event for details
+            dropdown.appendChild(li);
+        });
+    }
+
+    function updateDetails(index) {
+        const detailsColumn = document.getElementById('detailsColumn');
+        const selectedDetails = document.getElementById('selectedDetails');
+        const selectedData = data[index];
+        let detailsHTML = "";
+
+        for (const [key, value] of Object.entries(selectedData)) {
+            if (value) {
+                detailsHTML += `<strong>${key}:</strong> ${value}<br>`;
+            }
+        }
+
+        selectedDetails.innerHTML = detailsHTML; // Update details column
+        detailsColumn.style.display = "block"; // Make details column visible
+    }
+
+ 
+    function addNewEntry() {
+        // Collect values from the form inputs
+        const name = document.getElementById('entryName').value;
+        const title = document.getElementById('entryTitle').value;
+        const department = document.getElementById('entryDepartment').value;
+        const line = document.getElementById('entryLine').value;
+        const responsibilityCenter = document.getElementById('entryResponsibilityCenter').value;
+        const location = document.getElementById('entryLocation').value;
+        const address = document.getElementById('entryAddress').value;
+        const cityStateZip = document.getElementById('entryCityStateZip').value;
+        const conferenceRoom = document.getElementById('entryConferenceRoom').value;
+        const receptionDesk = document.getElementById('entryReceptionDesk').value;
+        const fax = document.getElementById('entryFax').value;
+        const officePhone = document.getElementById('entryOfficePhone').value;
+        const mobilePhone = document.getElementById('entryMobilePhone').value;
+        const pass = document.getElementById('entryPass').value;
+
+        const newEntry = {
+            "Name": name,
+            "Title": title,
+            "Department": department,
+            "Line": line,
+            "ResponsibilityCenter": responsibilityCenter,
+            "Location": location,
+            "Address": address,
+            "City/State/ZIP": cityStateZip,
+            "ConferenceRoom": conferenceRoom,
+            "ReceptionDesk": receptionDesk,
+            "Fax": fax,
+            "OfficePhone": officePhone,
+            "MobilePhone": mobilePhone,
+            "Pass": pass
+        };
+
+
+        data.push(newEntry);
+
+        populateDropdown();
+
+
+        document.getElementById('newEntryForm').reset();
+
+        
+        toggleForm();
+    }
+    
+    document.getElementById('newEntryForm').addEventListener('submit', addNewEntry);
+    populateDropdown();
+</script>
+<footer>
+    Tools created by Jose Cardona
+</footer>
