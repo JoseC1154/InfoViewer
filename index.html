@@ -135,6 +135,29 @@
 	}
 
 
+	.htmlViewer-container {
+	    display: none; /* Hide the form by default */
+	    flex-direction: column; /* Stack elements vertically */
+	    justify-content: start; /* Align content to the top */
+	    align-items: center; /* Center elements horizontally */
+	    width: 350px; /* Set the form width */
+	    height: 600px; /* Limit the height */
+	    padding: 10px; /* Add space inside the form */
+	    border: 2px solid #ccc; /* Light border for visibility */
+	    border-radius: 12px; /* Rounded corners for aesthetic look */
+	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+	    background-color: #f9f9f9; /* Light gray background */
+	    overflow-y: auto; /* Enable scrolling for overflow content */
+	    position: absolute; /* Allow dynamic positioning */
+	    top: 50%; /* Center vertically */
+	    left: 50%; /* Center horizontally */
+	    transform: translate(50%, -50%); /* Center the form on the screen */
+	    z-index: 2; /* Ensure it appears above other elements */
+	    transition: all 0.3s ease-in-out; /* Smooth animations for changes */
+	    box-sizing: border-box; /* Include padding and border in dimensions */
+
+	}
+
 
         button {
             margin-top: 10px;
@@ -174,31 +197,56 @@
         .plus-button:hover {
             background-color: #0056b3;
         }
-       
-	/* Hide edit button until an entry is selected */
-       .edit-button {
-	       display: none;
-	       position: absolute;
-	       bottom: 60px;           /* sits 50px above the plus button */
-	       left: 10px;
-	       font-size: 1.5em;
-	       background-color: #28a745;
-	       color: white;
-	       border: none;
-	       border-radius: 50%;
-	       width: 40px;
-	       height: 40px;
-	       display: flex;
-	       justify-content: center;
-	       align-items: center;
-	       cursor: pointer;
-	       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-	       z-index: 3;
-       }
 
-       .edit-button:hover {
-	       background-color: #218838;
-       }
+	 /* Edit Button */
+        .edit-button {
+            position: absolute;
+            bottom: 60px;
+            left: 10px;
+            font-size: 1.5em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .edit-button:hover {
+            background-color: #0056b3;
+	}
+
+
+ 	/* Download New infoViewer Button */
+        .download-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-button:hover {
+            background-color: #0056b3;
+	}
+
+
+
         footer {
             margin-top: 20px;
             text-align: center;
@@ -244,11 +292,17 @@
     <button type="submit">Submit</button>
 </form>
 
-    <!-- Edit Button (hidden by default) -->
-    <button class="edit-button" onclick="openEditForm()">✎</button>
 
-    <!-- Plus Button -->
-    <button class="plus-button" onclick="toggleForm()">+</button>
+
+    <!-- html viewer -->
+<div id="htmlViewer" class="htmlViewer-container">
+    <h3>All Entries (JSON)</h3>
+    <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
+</div>
+
+<button class="download-button" onclick="toggleNewHtmlCard()" title="Download Viewer">📥</button>
+<button class="edit-button" onclick="toggleEditForm()" title="Edit Mode">✏️</button>
+<button class="plus-button" onclick="toggleForm()" title="Add New Entry">➕</button>
 
     <!-- Footer -->
     <footer>
@@ -256,226 +310,128 @@
     </footer>
 </body>
 <script>
-	let entries         = [ /* …existing seed data… */ ];
-	let currentIndex    = null;    // index of the selected entry
-	let isEditing       = false;   // mode flag
-
-	const ddl           = document.getElementById("customDropdown");
-	const searchInput   = document.getElementById("searchInput");
-	const detailsCol    = document.getElementById("detailsColumn");
-	const selectedEl    = document.getElementById("selectedDetails");
-	const form          = document.getElementById("newEntryForm");
-	const ddContainer   = document.getElementById("dropdownContainer");
-	const plusBtn       = document.querySelector(".plus-button");
-	const editBtn       = document.querySelector(".edit-button");
-	
-	// Render dropdown (unchanged)
-	function renderDropdown(list) {
-		ddl.innerHTML = "";
-		list.forEach((item, idx) => {
-			const li = document.createElement("li");
-			li.textContent = item.name + " — " + item.title;
-			li.dataset.index = idx;
-			li.addEventListener("click", () => showDetails(idx));
-			ddl.appendChild(li);
-		});
-	}
-
-	// Filter logic (unchanged)
-	function filterDropdown() {
-		const term = searchInput.value.toLowerCase();
-		renderDropdown(entries.filter(e =>
-			e.name.toLowerCase().includes(term) ||
-			e.title.toLowerCase().includes(term) ||
-			e.department.toLowerCase().includes(term)
-					     ));
-	}
-
-	// Show details & enable edit button
-	function showDetails(idx) {
-		currentIndex = idx;
-		const e = entries[idx];
-		selectedEl.innerHTML = Object.entries(e)
-			.map(([k, v]) => `<p><strong>${k}:</strong> ${v || "—"}</p>`)
-			.join("");
-		detailsCol.style.display = "block";
-		editBtn.style.display = "flex";   // reveal the edit button
-	}
-
-	// Open form for adding
-	function openAddForm() {
-		isEditing = false;
-		form.reset();
-		form.style.display      = "flex";
-		ddContainer.style.display = "none";
-	}
-
-	// Open form for editing
-	function openEditForm() {
-		if (currentIndex === null) {
-			return alert("Please select an entry first.");
-		}
-		isEditing = true;
-		const e = entries[currentIndex];
-
-		// Populate inputs
-		Object.keys(e).forEach(key => {
-			const input = document.getElementById("entry" + key.charAt(0).toUpperCase() + key.slice(1)
-							     );
-			if (input) input.value = e[key];
-		});
-
-		form.style.display        = "flex";
-		ddContainer.style.display = "none";
-	}
-
-	// Handle form submission (add vs. edit)
-	form.addEventListener("submit", function(ev) {
-		ev.preventDefault();
-		const data = {};
-		Array.from(this.elements).forEach(inp => {
-			if (inp.id && inp.value.trim() !== "") {
-				const key = inp.id.replace("entry", "")
-					.replace(/^\w/, c => c.toLowerCase());
-				data[key] = inp.value.trim();
-			}
-		});
-
-		if (isEditing && currentIndex !== null) {
-			entries[currentIndex] = data;
-		} else {
-			entries.push(data);
-		}
-
-		// Reset UI
-		form.style.display        = "none";
-		ddContainer.style.display = "flex";
-		editBtn.style.display     = "none";
-		currentIndex = null;
-
-		renderDropdown(entries);
-	});
-	
-	// Wire up plus button
-	plusBtn.addEventListener("click", openAddForm);
-
-	// Initialize
-	renderDropdown(entries);
-
-
-	const data = [
+    const data = [
         {
-            "Name": "Pdfl J. Mffff",
-            "Title": "Master",
-            "Department": "Field Operations",
-            "Line": "",
-            "ResponsibilityCenter": "",
-            "Location": "763 Avenue",
-            "Address": "763 Avenue",
-            "City/State/ZIP": "Test City, NA 11101",
-            "ConferenceRoom": "(347) 356-7886",
-            "ReceptionDesk": "(347) 356-7886",
-            "Fax": "(347) 356-78861",
-            "OfficePhone": "(347) 356-7886",
-            "MobilePhone": "(347) 356-7886",
-            "Pass": ""
+            Name: "Paul J. McPhee",
+            Title: "Chief Officer",
+            Department: "Field Operations",
+            Line: "",
+            ResponsibilityCenter: "",
+            Location: "27-17 Jackson Avenue",
+            Address: "27-17 Jackson Avenue",
+            "City/State/ZIP": "Long Island City, NY 11101",
+            ConferenceRoom: "(347) 643-7756",
+            ReceptionDesk: "(347) 643-7661",
+            Fax: "(347) 643-7771",
+            OfficePhone: "(347) 643-7664",
+            MobilePhone: "(347) 672-6316",
+            Pass: ""
         }
-	];
+    ];
 
-	    function toggleForm() {
-	    const form = document.getElementById('newEntryForm'); // The new entry form
-	    const dropdown = document.getElementById('dropdownContainer'); // The dropdown container
-	
-	    if (form.style.display === "none" || form.style.display === "") {
-	        // Open the form
-	        form.style.display = "flex"; // Make the form visible
-	        form.style.left = "30%"; // Center the form vertically
-	        dropdown.style.left = "calc(30% + 400px)"; // Move dropdown 100px down from its initial position
-	    } else {
-	        // Close the form
-	        form.style.display = "none"; // Hide the form
-	        dropdown.style.left = "50%"; // Reset dropdown to its original vertical position
-	    }
+    const formFields = [
+        "entryName", "entryTitle", "entryDepartment", "entryLine", "entryResponsibilityCenter",
+        "entryLocation", "entryAddress", "entryCityStateZip", "entryConferenceRoom",
+        "entryReceptionDesk", "entryFax", "entryOfficePhone", "entryMobilePhone", "entryPass"
+    ];
+
+    const entriesArray = [];
+
+	function toggleEditForm() {
+	    	alert("Edit form feature not yet implemented.");
 	}
+    
+
+	function toggleForm() {
+        const form = document.getElementById("newEntryForm");
+        const dropdown = document.getElementById("dropdownContainer");
+
+        const isClosed = !form.style.display || form.style.display === "none";
+
+        form.style.display = isClosed ? "flex" : "none";
+        form.style.left = isClosed ? "30%" : "";
+        dropdown.style.left = isClosed ? "calc(30% + 400px)" : "50%";
+    }
+
+
+
+
+
+    	function toggleNewHtmlCard() {
+	const newHtml = document.getElementById("htmlViewer");
+	const dropdown = document.getElementById("dropdownContainer");        
+	
+	const isClosed = !newHtml.style.display || newHtml.style.display === "none";
+        
+
+	newHtml.style.display = isClosed ? "flex" : "none";
+	newHtml.style.right = isClosed ? "30%" : "";
+        dropdown.style.right = isClosed ? "calc(30% + 400px)" : "50%";
+    
+
+	}
+
+
+
 
 
 
     function populateDropdown() {
-        const dropdown = document.getElementById('customDropdown');
-        dropdown.innerHTML = ""; // Clear previous dropdown items
+        const dropdown = document.getElementById("customDropdown");
+        dropdown.innerHTML = "";
+
         data.forEach((entry, index) => {
-            const li = document.createElement('li');
+            const li = document.createElement("li");
             li.textContent = entry.Name || `Entry ${index + 1}`;
             li.dataset.index = index;
-            li.onclick = () => updateDetails(index); // Attach click event for details
+            li.onclick = () => updateDetails(index);
             dropdown.appendChild(li);
         });
     }
 
     function updateDetails(index) {
-        const detailsColumn = document.getElementById('detailsColumn');
-        const selectedDetails = document.getElementById('selectedDetails');
+        const detailsColumn = document.getElementById("detailsColumn");
+        const selectedDetails = document.getElementById("selectedDetails");
         const selectedData = data[index];
-        let detailsHTML = "";
 
-        for (const [key, value] of Object.entries(selectedData)) {
-            if (value) {
-                detailsHTML += `<strong>${key}:</strong> ${value}<br>`;
-            }
-        }
+        selectedDetails.innerHTML = Object.entries(selectedData)
+            .filter(([_, value]) => value)
+            .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
+            .join("");
 
-        selectedDetails.innerHTML = detailsHTML; // Update details column
-        detailsColumn.style.display = "block"; // Make details column visible
+        detailsColumn.style.display = "block";
     }
 
- 
-    function addNewEntry() {
-        // Collect values from the form inputs
-        const name = document.getElementById('entryName').value;
-        const title = document.getElementById('entryTitle').value;
-        const department = document.getElementById('entryDepartment').value;
-        const line = document.getElementById('entryLine').value;
-        const responsibilityCenter = document.getElementById('entryResponsibilityCenter').value;
-        const location = document.getElementById('entryLocation').value;
-        const address = document.getElementById('entryAddress').value;
-        const cityStateZip = document.getElementById('entryCityStateZip').value;
-        const conferenceRoom = document.getElementById('entryConferenceRoom').value;
-        const receptionDesk = document.getElementById('entryReceptionDesk').value;
-        const fax = document.getElementById('entryFax').value;
-        const officePhone = document.getElementById('entryOfficePhone').value;
-        const mobilePhone = document.getElementById('entryMobilePhone').value;
-        const pass = document.getElementById('entryPass').value;
+    function addNewEntry(event) {
+        event.preventDefault();
 
-        const newEntry = {
-            "Name": name,
-            "Title": title,
-            "Department": department,
-            "Line": line,
-            "ResponsibilityCenter": responsibilityCenter,
-            "Location": location,
-            "Address": address,
-            "City/State/ZIP": cityStateZip,
-            "ConferenceRoom": conferenceRoom,
-            "ReceptionDesk": receptionDesk,
-            "Fax": fax,
-            "OfficePhone": officePhone,
-            "MobilePhone": mobilePhone,
-            "Pass": pass
-        };
+        const entryData = {};
+        formFields.forEach(id => {
+            const key = id.replace("entry", "");
+            const input = document.getElementById(id);
+            entryData[key] = input.value;
+            input.value = ""; // Clear form field
+        });
 
+        entriesArray.push(entryData);
+        data.push(entryData);
 
-        data.push(newEntry);
-
+        document.getElementById("jsonOutput").value = JSON.stringify(entriesArray, null, 4);
         populateDropdown();
-
-
-        document.getElementById('newEntryForm').reset();
-
-        
+        document.getElementById("newEntryForm").reset();
         toggleForm();
     }
-    
-    document.getElementById('newEntryForm').addEventListener('submit', addNewEntry);
+	function filterDropdown() {
+    		const input = document.getElementById("searchInput").value.toLowerCase();
+    		const dropdown = document.getElementById("customDropdown");
+    		dropdown.querySelectorAll("li").forEach(li => {
+        	const match = li.textContent.toLowerCase().includes(input);
+       	 	li.style.display = match ? "block" : "none";
+    		});
+	}
+
+
+    document.getElementById("newEntryForm").addEventListener("submit", addNewEntry);
     populateDropdown();
 </script>
 <footer>
