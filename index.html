@@ -448,7 +448,7 @@
 	  const blob = new Blob([headHTML], { type: "text/html" });
 	  const link = document.createElement("a");
 	  link.href = URL.createObjectURL(blob);
-	  link.download = "head-only.html";
+	  link.download = "JC_test_html.html"; /* file download name*/
 	  document.body.appendChild(link);
 	  link.click();
 	  document.body.removeChild(link);
