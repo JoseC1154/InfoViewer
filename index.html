@@ -303,7 +303,7 @@
 <div id="htmlViewer" class="htmlViewer-container">
     <h3>All Entries (JSON)</h3>
     <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
-    <button>Download</button>
+    <button onclick="downloadHead()">Download</button>
 </div>
 
 <button class="download-button" onclick="toggleNewHtmlCard()" title="Download Viewer">📥</button>
@@ -434,6 +434,24 @@
         	const match = li.textContent.toLowerCase().includes(input);
        	 	li.style.display = match ? "block" : "none";
     		});
+	}
+	function downloadHead() {
+	  const headContent = document.head.innerHTML;
+	
+	  const headHTML = `<!DOCTYPE html>
+	<html>
+	  <head>
+	${headContent}
+	  </head>
+	</html>`;
+	
+	  const blob = new Blob([headHTML], { type: "text/html" });
+	  const link = document.createElement("a");
+	  link.href = URL.createObjectURL(blob);
+	  link.download = "head-only.html";
+	  document.body.appendChild(link);
+	  link.click();
+	  document.body.removeChild(link);
 	}
 
 
