@@ -424,6 +424,19 @@
 	</script>
 </body>
 <script>
+	document.getElementById("jsonOutput").addEventListener("input", () => {
+	  const jsonText = document.getElementById("jsonOutput").value;
+	
+	  try {
+	    const parsed = JSON.parse(jsonText);
+	    window.data = Array.isArray(parsed) ? parsed : [parsed];
+	    populateDropdown();
+	  } catch (e) {
+	    console.warn("Live JSON parsing error:", e);
+	    // Optionally: clear dropdown if parsing fails
+	    document.getElementById("customDropdown").innerHTML = "<li>Invalid JSON</li>";
+	  }
+	});
     const formFields = [
         "entryName", "entryTitle", "entryDepartment", "entryLine", "entryResponsibilityCenter",
         "entryLocation", "entryAddress", "entryCityStateZip", "entryConferenceRoom",
