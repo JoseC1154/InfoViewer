@@ -436,16 +436,6 @@
     		});
 	}
 	function downloadFullHtml() {
-		  const headContent = document.head.innerHTML;
-		  const bodyContent = document.body.innerHTML;
-		
-		  const fullHtml = `<!DOCTYPE html>
-		<html>
-		  <head>
-		${headContent}
-		  </head>
-		  <body>
-		${bodyContent}function downloadFullHtml() {
 	  const headContent = document.head.innerHTML;
 	  const bodyContent = document.body.innerHTML;
 	
@@ -487,17 +477,6 @@
 	  link.click();
 	  document.body.removeChild(link);
 	}
-		  </body>
-		</html>`;
-		
-		  const blob = new Blob([fullHtml], { type: "text/html" });
-		  const link = document.createElement("a");
-		  link.href = URL.createObjectURL(blob);
-		  link.download = "testHtml.html"; // ✅ using your custom name
-		  document.body.appendChild(link);
-		  link.click();
-		  document.body.removeChild(link);
-		}
 
 
     document.getElementById("newEntryForm").addEventListener("submit", addNewEntry);
