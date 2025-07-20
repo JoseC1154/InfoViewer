@@ -303,7 +303,7 @@
 <div id="htmlViewer" class="htmlViewer-container">
     <h3>All Entries (JSON)</h3>
     <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
-    <button onclick="downloadHead()">Download</button>
+    <button onclick="downloadFullHtml()">Download</button>
 </div>
 
 <button class="download-button" onclick="toggleNewHtmlCard()" title="Download Viewer">📥</button>
@@ -435,24 +435,69 @@
        	 	li.style.display = match ? "block" : "none";
     		});
 	}
-	function downloadHead() {
+	function downloadFullHtml() {
+		  const headContent = document.head.innerHTML;
+		  const bodyContent = document.body.innerHTML;
+		
+		  const fullHtml = `<!DOCTYPE html>
+		<html>
+		  <head>
+		${headContent}
+		  </head>
+		  <body>
+		${bodyContent}function downloadFullHtml() {
 	  const headContent = document.head.innerHTML;
+	  const bodyContent = document.body.innerHTML;
 	
-	  const headHTML = `<!DOCTYPE html>
+	  const jsonText = document.getElementById("jsonOutput").value;
+	  let parsedData;
+	
+	  try {
+	    parsedData = JSON.parse(jsonText);
+	  } catch (e) {
+	    alert("Invalid JSON format in jsonOutput");
+	    return;
+	  }
+	
+	  // Make sure the data is an array for consistency
+	  const dataArray = Array.isArray(parsedData) ? parsedData : [parsedData];
+	
+	  const jsonScript = `
+	    <script>
+	      const data = ${JSON.stringify(dataArray, null, 2)};
+	    </script>
+	  `;
+	
+	  const fullHtml = `<!DOCTYPE html>
 	<html>
 	  <head>
 	${headContent}
 	  </head>
+	  <body>
+	${bodyContent}
+	  </body>
+	${jsonScript}
 	</html>`;
 	
-	  const blob = new Blob([headHTML], { type: "text/html" });
+	  const blob = new Blob([fullHtml], { type: "text/html" });
 	  const link = document.createElement("a");
 	  link.href = URL.createObjectURL(blob);
-	  link.download = "JC_test_html.html"; /* file download name*/
+	  link.download = "testHtml.html";
 	  document.body.appendChild(link);
 	  link.click();
 	  document.body.removeChild(link);
 	}
+		  </body>
+		</html>`;
+		
+		  const blob = new Blob([fullHtml], { type: "text/html" });
+		  const link = document.createElement("a");
+		  link.href = URL.createObjectURL(blob);
+		  link.download = "testHtml.html"; // ✅ using your custom name
+		  document.body.appendChild(link);
+		  link.click();
+		  document.body.removeChild(link);
+		}
 
 
     document.getElementById("newEntryForm").addEventListener("submit", addNewEntry);
