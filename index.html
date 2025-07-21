@@ -40,21 +40,21 @@
 
         .dropdown-container {
 	    display: flex;
-	    align-items: flex-start;
-	    width: 31%;
+	    flex-direction: column;
+	    justify-content: space-between;
+	    align-items: center;
+	    width: 350px;
+	    height: auto;
 	    padding: 20px;
+	    border: 2px solid #ccc;
 	    border-radius: 12px;
 	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 	    background-color: #f9f9f9;
-	    position: absolute;
-	    top: 50%;
-	    left: 50%;
-	    transform: translate(-50%, -50%);
+	    position: relative;
 	    z-index: 1;
-	    transition: all 0.3s ease-in-out;
+	    transition: transition: all 0.3s ease-in-out;
+	    box-sizing: border-box;
 	    overflow: hidden;
-	    box-sizing: content-box;
-	    flex-direction: row;
 	}
 
         .custom-dropdown {
@@ -81,7 +81,11 @@
         }
 
 	.dropdown-column{
-	     width:400px;
+	         width: 100%;
+    		padding-right: 10px;
+    		display: flex;
+    		flex-direction: column;
+    		align-items: center;
 	}
 	    
         .details-column {
