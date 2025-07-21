@@ -257,49 +257,49 @@
 </head>
 <body>
     <h2>Info Viewer</h2>
-
-    <!-- Dropdown Container -->
-    <div id="dropdownContainer" class="dropdown-container">
-        <div id="dropdownColumn" class="dropdown-column">
-            <img src="PhoneBoard.png" alt="Phone Board Icon">
-            <input type="text" id="searchInput" placeholder="Start typing to search..." oninput="filterDropdown()">
-            <ul id="customDropdown" class="custom-dropdown"></ul>
-            <p>Search and select a location from the dropdown.</p>
-        </div>
-        <div id="detailsColumn" class="details-column">
-            <h3>Details</h3>
-            <div id="selectedDetails" class="details"></div>
-        </div>
-    </div>
-
-    <!-- New Entry Form -->
-    <form id="newEntryForm" class="form-container">
-    <h3>Add New Entry</h3>
-    <input type="text" id="entryName" placeholder="Name" required>
-    <input type="text" id="entryTitle" placeholder="Title" required>
-    <input type="text" id="entryDepartment" placeholder="Department" required>
-    <input type="text" id="entryLine" placeholder="Line">
-    <input type="text" id="entryResponsibilityCenter" placeholder="Responsibility Center">
-    <input type="text" id="entryLocation" placeholder="Location">
-    <input type="text" id="entryAddress" placeholder="Address">
-    <input type="text" id="entryCityStateZip" placeholder="City/State/ZIP">
-    <input type="text" id="entryConferenceRoom" placeholder="Conference Room">
-    <input type="text" id="entryReceptionDesk" placeholder="Reception Desk">
-    <input type="text" id="entryFax" placeholder="Fax">
-    <input type="text" id="entryOfficePhone" placeholder="Office Phone">
-    <input type="text" id="entryMobilePhone" placeholder="Mobile Phone">
-    <input type="text" id="entryPass" placeholder="Pass">
-    <button type="submit">Submit</button>
-</form>
-
-
-
-    <!-- html viewer -->
-<div id="htmlViewer" class="htmlViewer-container">
-    <h3>All Entries (JSON)</h3>
-    <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
-</div>
-
+	<div id="cardShifter">
+		    <!-- Dropdown Container -->
+		    <div id="dropdownContainer" class="dropdown-container">
+		        <div id="dropdownColumn" class="dropdown-column">
+		            <img src="PhoneBoard.png" alt="Phone Board Icon">
+		            <input type="text" id="searchInput" placeholder="Start typing to search..." oninput="filterDropdown()">
+		            <ul id="customDropdown" class="custom-dropdown"></ul>
+		            <p>Search and select a location from the dropdown.</p>
+		        </div>
+		        <div id="detailsColumn" class="details-column">
+		            <h3>Details</h3>
+		            <div id="selectedDetails" class="details"></div>
+		        </div>
+		    </div>
+	
+		    <!-- New Entry Form -->
+		    <form id="newEntryForm" class="form-container">
+		    <h3>Add New Entry</h3>
+		    <input type="text" id="entryName" placeholder="Name" required>
+		    <input type="text" id="entryTitle" placeholder="Title" required>
+		    <input type="text" id="entryDepartment" placeholder="Department" required>
+		    <input type="text" id="entryLine" placeholder="Line">
+		    <input type="text" id="entryResponsibilityCenter" placeholder="Responsibility Center">
+		    <input type="text" id="entryLocation" placeholder="Location">
+		    <input type="text" id="entryAddress" placeholder="Address">
+		    <input type="text" id="entryCityStateZip" placeholder="City/State/ZIP">
+		    <input type="text" id="entryConferenceRoom" placeholder="Conference Room">
+		    <input type="text" id="entryReceptionDesk" placeholder="Reception Desk">
+		    <input type="text" id="entryFax" placeholder="Fax">
+		    <input type="text" id="entryOfficePhone" placeholder="Office Phone">
+		    <input type="text" id="entryMobilePhone" placeholder="Mobile Phone">
+		    <input type="text" id="entryPass" placeholder="Pass">
+		    <button type="submit">Submit</button>
+		</form>
+	
+	
+	
+		    <!-- html viewer -->
+		<div id="htmlViewer" class="htmlViewer-container">
+		    <h3>All Entries (JSON)</h3>
+		    <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
+		</div>
+	</div>
 <button class="download-button" onclick="toggleNewHtmlCard()" title="Download Viewer">📥</button>
 <button class="edit-button" onclick="toggleEditForm()" title="Edit Mode">✏️</button>
 <button class="plus-button" onclick="toggleForm()" title="Add New Entry">➕</button>
