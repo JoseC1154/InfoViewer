@@ -39,24 +39,22 @@
         }
 
         .dropdown-container {
-	    display: flex; /* Enables flexbox layout for inner content */
-	    flex-direction: column; /* Stacks child elements vertically */
-	    justify-content: space-between; /* Evenly spaces content within */
-	    align-items: center; /* Centers content horizontally */
-	    width: 350px; /* Fixed width of the container */
-	    padding: 20px; /* Space inside the container */
-	    border: 2px solid #ccc; /* Light gray border for visibility */
-	    border-radius: 12px; /* Rounded corners */
-	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
-	    background-color: #f9f9f9; /* Light gray background for contrast */
-	    position: absolute; /* Allows dynamic positioning on the page */
-	    top: 50%; /* Vertically centers the container */
-	    left: 50%; /* Horizontally centers the container */
-	    transform: translate(-50%, -50%); /* Ensures precise centering */
-	    z-index: 1; /* Places the container behind the form (when shown) */
-	    transition: all 0.3s ease-in-out; /* Smooth transitions when moved */
-	    overflow: hidden; /* Prevents content from overflowing */
-	    box-sizing: border-box; /* Ensures padding/borders are part of width/height */
+	    display: flex;
+	    align-items: flex-start;
+	    width: 31%;
+	    padding: 20px;
+	    border-radius: 12px;
+	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+	    background-color: #f9f9f9;
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	    z-index: 1;
+	    transition: all 0.3s ease-in-out;
+	    overflow: hidden;
+	    box-sizing: content-box;
+	    flex-direction: row;
 	}
 
         .custom-dropdown {
@@ -111,7 +109,9 @@
             box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
         }
-
+	#cardShifter {
+		width: 90%;
+	}
 	.form-container {
 	    display: none; /* Hide the form by default */
 	    flex-direction: column; /* Stack elements vertically */
