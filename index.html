@@ -74,6 +74,7 @@
             min-height: 200px;
             max-height: 400px;
             overflow-y: auto;
+            overflow-x: hidden;
             border: 1px solid #ccc;
             border-radius: 8px;
             background-color: white;
@@ -81,6 +82,26 @@
             box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
             padding: 0;
             list-style: none;
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f9f9f9;
+        }
+
+        .custom-dropdown::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-dropdown::-webkit-scrollbar-track {
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .custom-dropdown::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .custom-dropdown::-webkit-scrollbar-thumb:hover {
+            background: #999;
         }
 
         .custom-dropdown li {
@@ -249,6 +270,35 @@
             background: none;
         }
 
+        /* Download Button Pulse Effect */
+        .pulse-green {
+            animation: pulseGreen 3s ease-in-out infinite;
+            background: rgba(76, 175, 80, 0.2) !important;
+            /* border: 2px solid #4caf50 !important; */
+            color: #2e7d32 !important;
+            /* box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); */
+        }
+
+        .pulse-green:hover {
+            color: #1b5e20 !important;
+            background: rgba(76, 175, 80, 0.3) !important;
+        }
+
+        @keyframes pulseGreen {
+            0% {
+                box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+                transform: scale(1.05);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+                transform: scale(1);
+            }
+        }
+
         /* Plus Button */
         .plus-button {
             position: absolute;
@@ -350,6 +400,51 @@
             transform: translateX(0);
             width: 50%;
         }
+
+        .custom-dropdown {
+            width: 100%;
+            max-width: 100%;
+            flex: 1;
+            min-height: 100px;
+            max-height: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            margin-bottom: 10px;
+            box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            list-style: none;
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f9f9f9;
+        }
+
+        .custom-dropdown::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-dropdown::-webkit-scrollbar-track {
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .custom-dropdown::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .custom-dropdown::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .dropdown-column p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -402,7 +497,7 @@
         <div id="htmlViewer" class="htmlViewer-container">
             <h3>All Entries (JSON)</h3>
             <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
-            <button type="button" onclick="downloadNewInfoViewer()">Download New InfoViewer</button>
+            <button type="button" id="downloadInfoViewerBtn" onclick="downloadNewInfoViewer()">Download New InfoViewer</button>
         </div>
     </div>
 
@@ -436,6 +531,9 @@
             Pass: ""
         }
     ];
+
+    // Store the original data state for comparison
+    const originalDataBaseline = JSON.parse(JSON.stringify(data));
 
     const formFields = [
         "entryName", "entryTitle", "entryDepartment", "entryLine", "entryResponsibilityCenter",
@@ -702,6 +800,9 @@ function addNewEntry(event) {
     // Scroll form to top and focus on first field
     form.scrollTop = 0;
     document.getElementById("entryName").focus();
+    
+    // Check if download button should pulse
+    checkDataDifference();
 }
     function filterDropdown() {
         const input = document.getElementById("searchInput").value.toLowerCase();
@@ -743,6 +844,49 @@ function addNewEntry(event) {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        
+        // Update baseline to current state after successful download
+        originalDataBaseline.length = 0;  // Clear the array
+        originalDataBaseline.push(...updatedData);  // Add current data
+        
+        // Remove pulse effect after download
+        checkDataDifference();
+    }
+
+    function checkDataDifference() {
+        const downloadBtn = document.querySelector('.download-button');
+        
+        if (!downloadBtn) {
+            console.log('Download button not found');
+            return;
+        }
+        
+        try {
+            const currentJsonData = document.getElementById("jsonOutput").value;
+            const jsonData = JSON.parse(currentJsonData);
+            
+            // Compare against the original baseline, not the current data array
+            const originalDataStr = JSON.stringify(originalDataBaseline);
+            const jsonDataStr = JSON.stringify(jsonData);
+            
+            console.log('Original baseline length:', originalDataBaseline.length);
+            console.log('JSON data length:', jsonData.length);
+            console.log('Arrays are equal:', originalDataStr === jsonDataStr);
+            
+            if (originalDataStr !== jsonDataStr) {
+                // Data is different from original - add pulse effect
+                console.log('Adding pulse effect - data has changed from original');
+                downloadBtn.classList.add('pulse-green');
+            } else {
+                // Data is the same as original - remove pulse effect
+                console.log('Removing pulse effect - data matches original');
+                downloadBtn.classList.remove('pulse-green');
+            }
+        } catch (e) {
+            console.log('Error parsing JSON:', e);
+            // If JSON parsing fails, remove pulse effect
+            downloadBtn.classList.remove('pulse-green');
+        }
     }
 
 
@@ -751,6 +895,9 @@ function addNewEntry(event) {
 
     // Pre-fill JSON output with current data
     document.getElementById("jsonOutput").value = JSON.stringify(data, null, 4);
+    
+    // Initial check for data difference
+    checkDataDifference();
 
     // Close form if click outside form-container when it's open
     // Also handle click outside dropdown container in edit mode
