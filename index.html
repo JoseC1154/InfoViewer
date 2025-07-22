@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,28 +38,60 @@
             margin-bottom: 20px;
             color: #333;
             text-align: center;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .dropdown-container {
-	    display: flex; /* Enables flexbox layout for inner content */
-	    flex-direction: column; /* Stacks child elements vertically */
-	    justify-content: space-between; /* Evenly spaces content within */
-	    align-items: center; /* Centers content horizontally */
-	    width: 350px; /* Fixed width of the container */
-	    padding: 20px; /* Space inside the container */
-	    border: 2px solid #ccc; /* Light gray border for visibility */
-	    border-radius: 12px; /* Rounded corners */
-	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
-	    background-color: #f9f9f9; /* Light gray background for contrast */
-	    position: absolute; /* Allows dynamic positioning on the page */
-	    top: 50%; /* Vertically centers the container */
-	    left: 50%; /* Horizontally centers the container */
-	    transform: translate(-50%, -50%); /* Ensures precise centering */
-	    z-index: 1; /* Places the container behind the form (when shown) */
-	    transition: all 0.3s ease-in-out; /* Smooth transitions when moved */
-	    overflow: hidden; /* Prevents content from overflowing */
-	    box-sizing: border-box; /* Ensures padding/borders are part of width/height */
-	}
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+            width: 350px;
+            height: 600px;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+            z-index: 1;
+            overflow: hidden;
+            box-sizing: border-box;
+            position: static;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideInDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-container.expanded {
+            width: 700px;
+            opacity: 1;
+            transform: translateX(0);
+            animation: none;
+        }
+
+        .dropdown-container.edit-mode {
+            width: 350px;
+            opacity: 1;
+            transform: translateX(0);
+            animation: none;
+        }
 
         .custom-dropdown {
             width: 100%;
@@ -83,12 +117,53 @@
         }
 
         .details-column {
-            width: 100%;
+            width: 50%;
+            min-width: 300px;
             border-left: 2px solid #ccc;
             padding-left: 20px;
-            margin-left: 10px;
+            margin-left: 20px;
             box-sizing: border-box;
             display: none;
+            position: relative;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .details-column.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .dropdown-container.edit-mode .details-column {
+            width: 100%;
+            margin-left: 0;
+            border-left: none;
+            padding-left: 0;
+        }
+
+        /* Close Button for Details Column */
+        .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.5em;
+            background: none;
+            color: #a0a0a0;
+            border: none;
+            border-radius: 5px;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .close-button:hover {
+            color: #404040;
         }
 
         img {
@@ -99,6 +174,7 @@
             border-radius: 12px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
             box-sizing: border-box;
+            object-fit: contain;
         }
 
         input {
@@ -112,67 +188,90 @@
             box-sizing: border-box;
         }
 
-	.form-container {
-	    display: none; /* Hide the form by default */
-	    flex-direction: column; /* Stack elements vertically */
-	    justify-content: start; /* Align content to the top */
-	    align-items: center; /* Center elements horizontally */
-	    width: 350px; /* Set the form width */
-	    height: 600px; /* Limit the height */
-	    padding: 10px; /* Add space inside the form */
-	    border: 2px solid #ccc; /* Light border for visibility */
-	    border-radius: 12px; /* Rounded corners for aesthetic look */
-	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
-	    background-color: #f9f9f9; /* Light gray background */
-	    overflow-y: auto; /* Enable scrolling for overflow content */
-	    position: absolute; /* Allow dynamic positioning */
-	    top: 50%; /* Center vertically */
-	    left: 50%; /* Center horizontally */
-	    transform: translate(-50%, -50%); /* Center the form on the screen */
-	    z-index: 2; /* Ensure it appears above other elements */
-	    transition: all 0.3s ease-in-out; /* Smooth animations for changes */
-	    box-sizing: border-box; /* Include padding and border in dimensions */
-	}
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            margin: 0 0 20px 0;
+            font-size: 0.9em;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            resize: vertical;
+        }
 
+        /* Main wrapper container */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            transition: all 0.3s ease-in-out;
+        }
 
-	.htmlViewer-container {
-	    display: none; /* Hide the form by default */
-	    flex-direction: column; /* Stack elements vertically */
-	    justify-content: start; /* Align content to the top */
-	    align-items: center; /* Center elements horizontally */
-	    width: 350px; /* Set the form width */
-	    height: 600px; /* Limit the height */
-	    padding: 10px; /* Add space inside the form */
-	    border: 2px solid #ccc; /* Light border for visibility */
-	    border-radius: 12px; /* Rounded corners for aesthetic look */
-	    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
-	    background-color: #f9f9f9; /* Light gray background */
-	    overflow-y: auto; /* Enable scrolling for overflow content */
-	    position: absolute; /* Allow dynamic positioning */
-	    top: 50%; /* Center vertically */
-	    left: 50%; /* Center horizontally */
-	    transform: translate(-50%, -50%);/* Center the form on the screen */
-	    z-index: 2; /* Ensure it appears above other elements */
-	    transition: all 0.3s ease-in-out; /* Smooth animations for changes */
-	    box-sizing: border-box; /* Include padding and border in dimensions */
+        /* 20px spacer between containers */
+        .spacer {
+            width: 20px;
+            height: 1px;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-	}
+        .spacer.show {
+            opacity: 1;
+        }
+
+        .form-container,
+        .htmlViewer-container {
+            display: none;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            width: 350px;
+            height: 600px;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+            overflow-y: auto;
+            z-index: 2;
+            box-sizing: border-box;
+            position: static;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-container.show,
+        .htmlViewer-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
 
 
         button {
             margin-top: 10px;
             padding: 10px 20px;
             font-size: 1em;
-            color: white;
-            background-color: #007BFF;
+            color: #a0a0a0;
+            background: none;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
-            background-color: #0056b3;
+            color: #404040;
+            background: none;
         }
 
         /* Plus Button */
@@ -180,9 +279,9 @@
             position: absolute;
             bottom: 10px;
             left: 10px;
-            font-size: 1.5em;
-            background-color: #007BFF;
-            color: white;
+            font-size: 2em;
+            background: none;
+            color: #a0a0a0;
             border: none;
             border-radius: 50%;
             width: 40px;
@@ -191,45 +290,45 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
         }
 
         .plus-button:hover {
-            background-color: #0056b3;
+            color: #404040;
+            background: none;
         }
 
-	 /* Edit Button */
+        /* Edit Button */
         .edit-button {
             position: absolute;
             bottom: 60px;
             left: 10px;
             font-size: 1.5em;
-            background-color: #007BFF;
-            color: white;
+            background: none;
+            color: #a0a0a0;
             border: none;
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .edit-button:hover {
-            background-color: #0056b3;
-	}
+            color: #404040;
+            background: none;
+        }
 
-
- 	/* Download New infoViewer Button */
+        /* Download Button */
         .download-button {
             position: absolute;
             bottom: 10px;
             right: 10px;
             font-size: 1.5em;
-            background-color: #007BFF;
-            color: white;
+            background: none;
+            color: #a0a0a0;
             border: none;
             border-radius: 50%;
             width: 40px;
@@ -238,71 +337,93 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .download-button:hover {
-            background-color: #0056b3;
-	}
-
-
-
+            color: #404040;
+            background: none;
+        }
+        
         footer {
             margin-top: 20px;
             text-align: center;
             font-size: 0.9em;
             color: #555;
         }
+        .edit-button[disabled] {
+            background: none !important;
+            color: #cccccc !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+        .edit-button[disabled]:hover {
+            background: none !important;
+            color: #cccccc !important;
+        }
+        .dropdown-column {
+            width: 50%;
+            min-width: 300px;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
     <h2>Info Viewer</h2>
 
-    <!-- Dropdown Container -->
-    <div id="dropdownContainer" class="dropdown-container">
-        <div id="dropdownColumn" class="dropdown-column">
-            <img src="PhoneBoard.png" alt="Phone Board Icon">
-            <input type="text" id="searchInput" placeholder="Start typing to search..." oninput="filterDropdown()">
-            <ul id="customDropdown" class="custom-dropdown"></ul>
-            <p>Search and select a location from the dropdown.</p>
+    <!-- Main Container Wrapper -->
+    <div id="mainContainer" class="main-container">
+        <!-- Entry Form -->
+        <form id="newEntryForm" class="form-container">
+            <h3 id="formTitle">Add New Entry</h3>
+            <input type="text" id="entryName" placeholder="Name" required>
+            <input type="text" id="entryTitle" placeholder="Title">
+            <input type="text" id="entryDepartment" placeholder="Department">
+            <input type="text" id="entryLine" placeholder="Line">
+            <input type="text" id="entryResponsibilityCenter" placeholder="Responsibility Center">
+            <input type="text" id="entryLocation" placeholder="Location">
+            <input type="text" id="entryAddress" placeholder="Address">
+            <input type="text" id="entryCityStateZip" placeholder="City/State/ZIP">
+            <input type="text" id="entryConferenceRoom" placeholder="Conference Room">
+            <input type="text" id="entryReceptionDesk" placeholder="Reception Desk">
+            <input type="text" id="entryFax" placeholder="Fax">
+            <input type="text" id="entryOfficePhone" placeholder="Office Phone">
+            <input type="text" id="entryMobilePhone" placeholder="Mobile Phone">
+            <input type="text" id="entryPass" placeholder="Pass">
+            <button type="submit">Submit</button>
+        </form>
+
+        <!-- Spacer between form and dropdown -->
+        <div id="formSpacer" class="spacer" style="display: none;"></div>
+
+        <!-- Dropdown Container -->
+        <div id="dropdownContainer" class="dropdown-container">
+            <div id="dropdownColumn" class="dropdown-column">
+                <img src="PhoneBoard.png" alt="Phone Board Icon">
+                <input type="text" id="searchInput" placeholder="Start typing to search..." oninput="filterDropdown()">
+                <ul id="customDropdown" class="custom-dropdown"></ul>
+                <p>Search and select a location from the dropdown.</p>
+            </div>
+            <div id="detailsColumn" class="details-column">
+                <button class="close-button" onclick="closeDetails()" title="Close Details">×</button>
+                <h3>Details</h3>
+                <div id="selectedDetails" class="details"></div>
+            </div>
         </div>
-        <div id="detailsColumn" class="details-column">
-            <h3>Details</h3>
-            <div id="selectedDetails" class="details"></div>
+
+        <!-- Spacer between dropdown and viewer -->
+        <div id="viewerSpacer" class="spacer" style="display: none;"></div>
+
+        <!-- HTML viewer -->
+        <div id="htmlViewer" class="htmlViewer-container">
+            <h3>All Entries (JSON)</h3>
+            <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
+            <button type="button" onclick="downloadInfoViewer()" title="Download InfoViewer Data">Download InfoViewer</button>
         </div>
     </div>
 
-    <!-- New Entry Form -->
-    <form id="newEntryForm" class="form-container">
-    <h3>Add New Entry</h3>
-    <input type="text" id="entryName" placeholder="Name" required>
-    <input type="text" id="entryTitle" placeholder="Title" required>
-    <input type="text" id="entryDepartment" placeholder="Department" required>
-    <input type="text" id="entryLine" placeholder="Line">
-    <input type="text" id="entryResponsibilityCenter" placeholder="Responsibility Center">
-    <input type="text" id="entryLocation" placeholder="Location">
-    <input type="text" id="entryAddress" placeholder="Address">
-    <input type="text" id="entryCityStateZip" placeholder="City/State/ZIP">
-    <input type="text" id="entryConferenceRoom" placeholder="Conference Room">
-    <input type="text" id="entryReceptionDesk" placeholder="Reception Desk">
-    <input type="text" id="entryFax" placeholder="Fax">
-    <input type="text" id="entryOfficePhone" placeholder="Office Phone">
-    <input type="text" id="entryMobilePhone" placeholder="Mobile Phone">
-    <input type="text" id="entryPass" placeholder="Pass">
-    <button type="submit">Submit</button>
-</form>
-
-
-
-    <!-- html viewer -->
-<div id="htmlViewer" class="htmlViewer-container">
-    <h3>All Entries (JSON)</h3>
-    <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
-</div>
-
-<button class="download-button" onclick="toggleNewHtmlCard()" title="Download Viewer">📥</button>
-<button class="edit-button" onclick="toggleEditForm()" title="Edit Mode">✏️</button>
-<button class="plus-button" onclick="toggleForm()" title="Add New Entry">➕</button>
+<button class="download-button" onclick="toggleNewHtmlCard()" title="Download Viewer">▼</button>
+<button class="edit-button" onclick="toggleEditForm()" title="Edit Mode">✎</button>
+<button class="plus-button" onclick="toggleForm()" title="Add New Entry">+</button>
 
     <!-- Footer -->
     <footer>
@@ -310,6 +431,8 @@
     </footer>
 </body>
 <script>
+    let selectedIndex = null;
+
     const data = [
         {
             Name: "Paul J. McPhee",
@@ -337,39 +460,181 @@
 
     const entriesArray = [];
 
-	function toggleEditForm() {
-	    	alert("Edit form feature not yet implemented.");
-	}
+    function toggleEditForm() {
+        const editButton = document.querySelector(".edit-button");
+        const form = document.getElementById("newEntryForm");
+        const formSpacer = document.getElementById("formSpacer");
+
+        // Prevent action if button is disabled
+        if (editButton && editButton.disabled) return;
+
+        if (selectedIndex === null) {
+            alert("Please select an entry to edit.");
+            return;
+        }
+
+        // Fill form fields with selected entry data
+        const entry = data[selectedIndex];
+        formFields.forEach(id => {
+            const key = id.replace("entry", "");
+            document.getElementById(id).value = entry[key] || "";
+        });
+
+        // Change form title and enter edit mode
+        document.getElementById("formTitle").textContent = "Edit Entry";
+
+        // Show the form and spacer with animation (if not already visible)
+        if (form.style.display !== "flex") {
+            form.style.display = "flex";
+            formSpacer.style.display = "block";
+            
+            // Trigger animation after a brief delay
+            requestAnimationFrame(() => {
+                form.classList.add("show");
+                formSpacer.classList.add("show");
+            });
+        }
+
+        // Indicate we are editing
+        form.dataset.editing = "true";
+
+        // Disable edit button while editing
+        if (editButton) editButton.disabled = true;
+    }
     
 
-	function toggleForm() {
+    function collapseContainer() {
+        const dropdownContainer = document.getElementById("dropdownContainer");
+        const detailsColumn = document.getElementById("detailsColumn");
+        const dropdownColumn = document.getElementById("dropdownColumn");
+        const editButton = document.querySelector(".edit-button");
+        
+        // Animate out details column
+        detailsColumn.classList.remove("show");
+        
+        // Hide after animation completes
+        setTimeout(() => {
+            dropdownContainer.classList.remove("expanded", "edit-mode");
+            detailsColumn.style.display = "none";
+            dropdownColumn.style.display = "block";
+        }, 400);
+        
+        selectedIndex = null;
+        
+        // Hide edit button when selection is cleared
+        if (editButton) {
+            editButton.style.display = "none";
+        }
+    }
+
+    function closeDetails() {
         const form = document.getElementById("newEntryForm");
-        const dropdown = document.getElementById("dropdownContainer");
+        const formSpacer = document.getElementById("formSpacer");
+        const dropdownContainer = document.getElementById("dropdownContainer");
+        const editButton = document.querySelector(".edit-button");
+        
+        // If in edit mode, clear form fields and exit edit mode
+        if (dropdownContainer.classList.contains("edit-mode")) {
+            // Clear all form fields
+            formFields.forEach(id => {
+                document.getElementById(id).value = "";
+            });
+            
+            // Animate out form if visible
+            if (form.style.display === "flex") {
+                form.classList.remove("show");
+                formSpacer.classList.remove("show");
+                
+                // Hide after animation completes
+                setTimeout(() => {
+                    form.style.display = "none";
+                    formSpacer.style.display = "none";
+                }, 400);
+            }
+            
+            // Reset form state
+            form.dataset.editing = "";
+            document.getElementById("formTitle").textContent = "Add New Entry";
+            
+            // Re-enable edit button
+            if (editButton) {
+                editButton.disabled = false;
+            }
+        }
+        
+        collapseContainer();
+    }
+
+    function toggleForm() {
+        const form = document.getElementById("newEntryForm");
+        const formSpacer = document.getElementById("formSpacer");
+        const editButton = document.querySelector(".edit-button");
 
         const isClosed = !form.style.display || form.style.display === "none";
 
-        form.style.display = isClosed ? "flex" : "none";
-        form.style.left = isClosed ? "30%" : "";
-        dropdown.style.left = isClosed ? "calc(30% + 400px)" : "50%";
+        if (isClosed) {
+            // Opening the form - clear all fields
+            formFields.forEach(id => {
+                document.getElementById(id).value = "";
+            });
+            form.dataset.editing = "";
+            document.getElementById("formTitle").textContent = "Add New Entry";
+            
+            // Show with animation
+            form.style.display = "flex";
+            formSpacer.style.display = "block";
+            
+            // Trigger animation after a brief delay
+            requestAnimationFrame(() => {
+                form.classList.add("show");
+                formSpacer.classList.add("show");
+            });
+        } else {
+            // Closing the form - reset title and animate out
+            document.getElementById("formTitle").textContent = "Add New Entry";
+            
+            form.classList.remove("show");
+            formSpacer.classList.remove("show");
+            
+            // Hide after animation completes
+            setTimeout(() => {
+                form.style.display = "none";
+                formSpacer.style.display = "none";
+            }, 400);
+        }
+
+        // Re-enable the edit button when form is closed
+        if (!isClosed && editButton) editButton.disabled = false;
     }
 
-
-
-
-
-    	function toggleNewHtmlCard() {
-	const newHtml = document.getElementById("htmlViewer");
-	const dropdown = document.getElementById("dropdownContainer");        
-	
-	const isClosed = !newHtml.style.display || newHtml.style.display === "none";
+    function toggleNewHtmlCard() {
+        const newHtml = document.getElementById("htmlViewer");
+        const viewerSpacer = document.getElementById("viewerSpacer");
         
+        const isClosed = !newHtml.style.display || newHtml.style.display === "none";
 
-    newHtml.style.left = isClosed ? "70%" : "";
-    dropdown.style.left = isClosed ? "30%" : "50%";
-        dropdown.style.right = isClosed ? "calc(30% + 400px)" : "50%";
-    
-
-	}
+        if (isClosed) {
+            // Show with animation
+            newHtml.style.display = "flex";
+            viewerSpacer.style.display = "block";
+            
+            // Trigger animation after a brief delay
+            requestAnimationFrame(() => {
+                newHtml.classList.add("show");
+                viewerSpacer.classList.add("show");
+            });
+        } else {
+            // Animate out
+            newHtml.classList.remove("show");
+            viewerSpacer.classList.remove("show");
+            
+            // Hide after animation completes
+            setTimeout(() => {
+                newHtml.style.display = "none";
+                viewerSpacer.style.display = "none";
+            }, 400);
+        }
+    }
 
 
 
@@ -390,8 +655,11 @@
     }
 
     function updateDetails(index) {
+        selectedIndex = index;
         const detailsColumn = document.getElementById("detailsColumn");
         const selectedDetails = document.getElementById("selectedDetails");
+        const dropdownContainer = document.getElementById("dropdownContainer");
+        const editButton = document.querySelector(".edit-button");
         const selectedData = data[index];
 
         selectedDetails.innerHTML = Object.entries(selectedData)
@@ -399,41 +667,137 @@
             .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
             .join("");
 
+        // Expand container and show details column with animation
+        dropdownContainer.classList.add("expanded");
         detailsColumn.style.display = "block";
+        
+        // Trigger animation after a brief delay
+        requestAnimationFrame(() => {
+            detailsColumn.classList.add("show");
+        });
+        
+        // Show edit button when selection is made
+        if (editButton) {
+            editButton.style.display = "flex";
+        }
     }
 
-    function addNewEntry(event) {
-        event.preventDefault();
+function addNewEntry(event) {
+    event.preventDefault();
 
-        const entryData = {};
-        formFields.forEach(id => {
-            const key = id.replace("entry", "");
-            const input = document.getElementById(id);
-            entryData[key] = input.value;
-            input.value = ""; // Clear form field
-        });
+    const entryData = {};
+    let nonNameFilled = 0;
 
+    formFields.forEach(id => {
+        const key = id.replace("entry", "");
+        const input = document.getElementById(id);
+        entryData[key] = input.value.trim();
+        if (id !== "entryName" && input.value.trim() !== "") {
+            nonNameFilled++;
+        }
+    });
+
+    if (entryData.Name === "" || nonNameFilled === 0) {
+        alert("Please fill in the Name and at least one additional field.");
+        return;
+    }
+
+    const form = document.getElementById("newEntryForm");
+    if (form.dataset.editing === "true" && selectedIndex !== null) {
+        // Edit existing entry
+        data[selectedIndex] = entryData;
+        entriesArray[selectedIndex] = entryData;
+        form.dataset.editing = "";
+        populateDropdown();
+        updateDetails(selectedIndex);
+    } else {
+        // Add new entry
         entriesArray.push(entryData);
         data.push(entryData);
-
-        document.getElementById("jsonOutput").value = JSON.stringify(entriesArray, null, 4);
         populateDropdown();
-        document.getElementById("newEntryForm").reset();
-        toggleForm();
+        updateDetails(data.length - 1);
     }
-	function filterDropdown() {
-    		const input = document.getElementById("searchInput").value.toLowerCase();
-    		const dropdown = document.getElementById("customDropdown");
-    		dropdown.querySelectorAll("li").forEach(li => {
-        	const match = li.textContent.toLowerCase().includes(input);
-       	 	li.style.display = match ? "block" : "none";
-    		});
-	}
+
+    // Combine original data with new entries for JSON display
+    const allEntries = [...data];
+    document.getElementById("jsonOutput").value = JSON.stringify(allEntries, null, 4);
+    document.getElementById("newEntryForm").reset();
+    collapseContainer();
+    toggleForm();
+}
+    function filterDropdown() {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const dropdown = document.getElementById("customDropdown");
+        dropdown.querySelectorAll("li").forEach(li => {
+            const match = li.textContent.toLowerCase().includes(input);
+            li.style.display = match ? "block" : "none";
+        });
+    }
 
 
     document.getElementById("newEntryForm").addEventListener("submit", addNewEntry);
     populateDropdown();
+
+    // Pre-fill JSON output with current data
+    document.getElementById("jsonOutput").value = JSON.stringify(data, null, 4);
+
+    // Download InfoViewer data function
+    function downloadInfoViewer() {
+        const allEntries = [...data];
+        const jsonData = JSON.stringify(allEntries, null, 4);
+        
+        // Create blob and download
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'infoviewer-data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Close form if click outside form-container when it's open
+    // Also handle click outside dropdown container in edit mode
+    // Clear selection when clicking outside dropdown container
+    document.addEventListener("mousedown", function(event) {
+        const form = document.getElementById("newEntryForm");
+        const dropdownContainer = document.getElementById("dropdownContainer");
+        const dropdownColumn = document.getElementById("dropdownColumn");
+        const formSpacer = document.getElementById("formSpacer");
+        const mainContainer = document.getElementById("mainContainer");
+        
+        // Check if click is on a button (exclude buttons from clearing selection)
+        const isButton = event.target.tagName === 'BUTTON' || 
+                         event.target.classList.contains('plus-button') ||
+                         event.target.classList.contains('edit-button') ||
+                         event.target.classList.contains('download-button') ||
+                         event.target.classList.contains('close-button');
+        
+        // Note: Removed form click outside behavior - form only closes via toggle button
+        
+        // Handle edit mode click outside dropdown container
+        if (dropdownContainer.classList.contains("edit-mode")) {
+            if (!dropdownContainer.contains(event.target) && !form.contains(event.target)) {
+                // Exit edit mode and restore dropdown column
+                dropdownContainer.classList.remove("edit-mode");
+                dropdownContainer.classList.add("expanded");
+                dropdownColumn.style.display = "block";
+                
+                // Reset form
+                form.style.display = "none";
+                formSpacer.style.display = "none";
+                form.dataset.editing = "";
+                document.getElementById("formTitle").textContent = "Add New Entry";
+                
+                // Re-enable edit button
+                const editButton = document.querySelector(".edit-button");
+                if (editButton) editButton.disabled = false;
+            }
+        }
+        
+        // Note: Removed automatic selection clearing - details now only close via close button
+    });
 </script>
-<footer>
-    Tools created by Jose Cardona
-</footer>
+</html>
