@@ -38,16 +38,6 @@
             margin-bottom: 20px;
             color: #333;
             text-align: center;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .dropdown-container {
@@ -63,39 +53,26 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             background-color: #f9f9f9;
             z-index: 1;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             box-sizing: border-box;
-            position: static;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            transform: translateY(-20px);
-            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes slideInDown {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            position: relative;
         }
 
         .dropdown-container.expanded {
             width: 700px;
-            opacity: 1;
-            transform: translateX(0);
-            animation: none;
         }
 
         .dropdown-container.edit-mode {
-            width: 350px;
-            opacity: 1;
-            transform: translateX(0);
-            animation: none;
+            width: 700px;
         }
 
         .custom-dropdown {
             width: 100%;
-            max-height: 150px;
+            max-width: 100%;
+            flex: 1;
+            min-height: 200px;
+            max-height: 400px;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -116,6 +93,11 @@
             background-color: #f0f0f0;
         }
 
+        .custom-dropdown li.selected {
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+        }
+
         .details-column {
             width: 50%;
             min-width: 300px;
@@ -124,29 +106,36 @@
             margin-left: 20px;
             box-sizing: border-box;
             display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: calc(100% - 40px);
+            margin-top: 20px;
+            margin-bottom: 20px;
             position: relative;
-            opacity: 0;
-            transform: translateX(20px);
+            transform: translateX(100%);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
         }
 
         .details-column.show {
-            opacity: 1;
+            display: block;
             transform: translateX(0);
+            opacity: 1;
         }
 
         .dropdown-container.edit-mode .details-column {
-            width: 100%;
-            margin-left: 0;
-            border-left: none;
-            padding-left: 0;
+            width: 50%;
+            margin-left: 20px;
+            border-left: 2px solid #ccc;
+            padding-left: 20px;
         }
 
         /* Close Button for Details Column */
         .close-button {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: -15px;
+            right: -15px;
             font-size: 1.5em;
             background: none;
             color: #a0a0a0;
@@ -160,6 +149,7 @@
             cursor: pointer;
             font-weight: bold;
             line-height: 1;
+            z-index: 10;
         }
 
         .close-button:hover {
@@ -207,7 +197,6 @@
             display: flex;
             flex-direction: row;
             align-items: flex-start;
-            justify-content: center;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -221,12 +210,6 @@
             width: 20px;
             height: 1px;
             flex-shrink: 0;
-            opacity: 0;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .spacer.show {
-            opacity: 1;
         }
 
         .form-container,
@@ -244,17 +227,9 @@
             background-color: #f9f9f9;
             overflow-y: auto;
             z-index: 2;
+            transition: all 0.3s ease-in-out;
             box-sizing: border-box;
             position: static;
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .form-container.show,
-        .htmlViewer-container.show {
-            opacity: 1;
-            transform: translateX(0);
         }
 
 
@@ -364,6 +339,16 @@
             width: 50%;
             min-width: 300px;
             overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dropdown-container.expanded .dropdown-column {
+            transform: translateX(0);
+            width: 50%;
         }
     </style>
 </head>
@@ -417,7 +402,6 @@
         <div id="htmlViewer" class="htmlViewer-container">
             <h3>All Entries (JSON)</h3>
             <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
-            <button type="button" onclick="downloadInfoViewer()" title="Download InfoViewer Data">Download InfoViewer</button>
         </div>
     </div>
 
@@ -482,18 +466,23 @@
 
         // Change form title and enter edit mode
         document.getElementById("formTitle").textContent = "Edit Entry";
+        const dropdownContainer = document.getElementById("dropdownContainer");
+        const dropdownColumn = document.getElementById("dropdownColumn");
 
-        // Show the form and spacer with animation (if not already visible)
+        // Show the form and spacer (if not already visible)
         if (form.style.display !== "flex") {
             form.style.display = "flex";
             formSpacer.style.display = "block";
-            
-            // Trigger animation after a brief delay
-            requestAnimationFrame(() => {
-                form.classList.add("show");
-                formSpacer.classList.add("show");
-            });
         }
+        
+        // Set edit mode (keep dropdown column visible and ensure details column is open)
+        dropdownContainer.classList.remove("expanded");
+        dropdownContainer.classList.add("edit-mode");
+        
+        // Ensure details column is visible in edit mode
+        const detailsColumn = document.getElementById("detailsColumn");
+        detailsColumn.style.display = "block";
+        detailsColumn.classList.add("show");
 
         // Indicate we are editing
         form.dataset.editing = "true";
@@ -509,17 +498,28 @@
         const dropdownColumn = document.getElementById("dropdownColumn");
         const editButton = document.querySelector(".edit-button");
         
-        // Animate out details column
+        // Don't collapse if in edit mode - details should remain open
+        if (dropdownContainer.classList.contains("edit-mode")) {
+            return;
+        }
+        
+        // Start slide out animation
         detailsColumn.classList.remove("show");
         
-        // Hide after animation completes
+        // Wait for animation to complete before hiding
         setTimeout(() => {
             dropdownContainer.classList.remove("expanded", "edit-mode");
             detailsColumn.style.display = "none";
-            dropdownColumn.style.display = "block";
         }, 400);
         
+        dropdownColumn.style.display = "block";
         selectedIndex = null;
+        
+        // Remove selection highlighting when clearing selection
+        const dropdown = document.getElementById("customDropdown");
+        dropdown.querySelectorAll("li").forEach(li => {
+            li.classList.remove("selected");
+        });
         
         // Hide edit button when selection is cleared
         if (editButton) {
@@ -540,17 +540,9 @@
                 document.getElementById(id).value = "";
             });
             
-            // Animate out form if visible
-            if (form.style.display === "flex") {
-                form.classList.remove("show");
-                formSpacer.classList.remove("show");
-                
-                // Hide after animation completes
-                setTimeout(() => {
-                    form.style.display = "none";
-                    formSpacer.style.display = "none";
-                }, 400);
-            }
+            // Hide form and spacer
+            form.style.display = "none";
+            formSpacer.style.display = "none";
             
             // Reset form state
             form.dataset.editing = "";
@@ -560,8 +552,17 @@
             if (editButton) {
                 editButton.disabled = false;
             }
+            
+            // Exit edit mode and keep details open if there's a selection
+            dropdownContainer.classList.remove("edit-mode");
+            if (selectedIndex !== null) {
+                dropdownContainer.classList.add("expanded");
+                // Keep details column open since there's still a selection
+                return;
+            }
         }
         
+        // Only collapse if not in edit mode or no selection
         collapseContainer();
     }
 
@@ -579,29 +580,13 @@
             });
             form.dataset.editing = "";
             document.getElementById("formTitle").textContent = "Add New Entry";
-            
-            // Show with animation
-            form.style.display = "flex";
-            formSpacer.style.display = "block";
-            
-            // Trigger animation after a brief delay
-            requestAnimationFrame(() => {
-                form.classList.add("show");
-                formSpacer.classList.add("show");
-            });
         } else {
-            // Closing the form - reset title and animate out
+            // Closing the form - reset title
             document.getElementById("formTitle").textContent = "Add New Entry";
-            
-            form.classList.remove("show");
-            formSpacer.classList.remove("show");
-            
-            // Hide after animation completes
-            setTimeout(() => {
-                form.style.display = "none";
-                formSpacer.style.display = "none";
-            }, 400);
         }
+
+        form.style.display = isClosed ? "flex" : "none";
+        formSpacer.style.display = isClosed ? "block" : "none";
 
         // Re-enable the edit button when form is closed
         if (!isClosed && editButton) editButton.disabled = false;
@@ -613,27 +598,8 @@
         
         const isClosed = !newHtml.style.display || newHtml.style.display === "none";
 
-        if (isClosed) {
-            // Show with animation
-            newHtml.style.display = "flex";
-            viewerSpacer.style.display = "block";
-            
-            // Trigger animation after a brief delay
-            requestAnimationFrame(() => {
-                newHtml.classList.add("show");
-                viewerSpacer.classList.add("show");
-            });
-        } else {
-            // Animate out
-            newHtml.classList.remove("show");
-            viewerSpacer.classList.remove("show");
-            
-            // Hide after animation completes
-            setTimeout(() => {
-                newHtml.style.display = "none";
-                viewerSpacer.style.display = "none";
-            }, 400);
-        }
+        newHtml.style.display = isClosed ? "flex" : "none";
+        viewerSpacer.style.display = isClosed ? "block" : "none";
     }
 
 
@@ -662,16 +628,28 @@
         const editButton = document.querySelector(".edit-button");
         const selectedData = data[index];
 
+        // Remove previous selection highlighting
+        const dropdown = document.getElementById("customDropdown");
+        dropdown.querySelectorAll("li").forEach(li => {
+            li.classList.remove("selected");
+        });
+
+        // Add selection highlighting to clicked item
+        const selectedLi = dropdown.querySelector(`li[data-index="${index}"]`);
+        if (selectedLi) {
+            selectedLi.classList.add("selected");
+        }
+
         selectedDetails.innerHTML = Object.entries(selectedData)
             .filter(([_, value]) => value)
             .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
             .join("");
 
-        // Expand container and show details column with animation
+        // Expand container and show details column with sliding animation
         dropdownContainer.classList.add("expanded");
         detailsColumn.style.display = "block";
         
-        // Trigger animation after a brief delay
+        // Trigger animation after display is set
         requestAnimationFrame(() => {
             detailsColumn.classList.add("show");
         });
@@ -706,24 +684,23 @@ function addNewEntry(event) {
     if (form.dataset.editing === "true" && selectedIndex !== null) {
         // Edit existing entry
         data[selectedIndex] = entryData;
-        entriesArray[selectedIndex] = entryData;
         form.dataset.editing = "";
         populateDropdown();
         updateDetails(selectedIndex);
     } else {
         // Add new entry
-        entriesArray.push(entryData);
         data.push(entryData);
         populateDropdown();
         updateDetails(data.length - 1);
     }
 
     // Combine original data with new entries for JSON display
-    const allEntries = [...data];
-    document.getElementById("jsonOutput").value = JSON.stringify(allEntries, null, 4);
+    document.getElementById("jsonOutput").value = JSON.stringify(data, null, 4);
     document.getElementById("newEntryForm").reset();
-    collapseContainer();
-    toggleForm();
+    
+    // Scroll form to top and focus on first field
+    form.scrollTop = 0;
+    document.getElementById("entryName").focus();
 }
     function filterDropdown() {
         const input = document.getElementById("searchInput").value.toLowerCase();
@@ -740,23 +717,6 @@ function addNewEntry(event) {
 
     // Pre-fill JSON output with current data
     document.getElementById("jsonOutput").value = JSON.stringify(data, null, 4);
-
-    // Download InfoViewer data function
-    function downloadInfoViewer() {
-        const allEntries = [...data];
-        const jsonData = JSON.stringify(allEntries, null, 4);
-        
-        // Create blob and download
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'infoviewer-data.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
 
     // Close form if click outside form-container when it's open
     // Also handle click outside dropdown container in edit mode
@@ -780,10 +740,9 @@ function addNewEntry(event) {
         // Handle edit mode click outside dropdown container
         if (dropdownContainer.classList.contains("edit-mode")) {
             if (!dropdownContainer.contains(event.target) && !form.contains(event.target)) {
-                // Exit edit mode and restore dropdown column
+                // Exit edit mode
                 dropdownContainer.classList.remove("edit-mode");
                 dropdownContainer.classList.add("expanded");
-                dropdownColumn.style.display = "block";
                 
                 // Reset form
                 form.style.display = "none";
