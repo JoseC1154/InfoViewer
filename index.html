@@ -402,6 +402,7 @@
         <div id="htmlViewer" class="htmlViewer-container">
             <h3>All Entries (JSON)</h3>
             <textarea id="jsonOutput" readonly placeholder="Submitted entries will appear here..."></textarea>
+            <button type="button" onclick="downloadNewInfoViewer()">Download New InfoViewer</button>
         </div>
     </div>
 
@@ -709,6 +710,39 @@ function addNewEntry(event) {
             const match = li.textContent.toLowerCase().includes(input);
             li.style.display = match ? "block" : "none";
         });
+    }
+
+    function downloadNewInfoViewer() {
+        // Get current data from JSON output
+        const currentJsonData = document.getElementById("jsonOutput").value;
+        let updatedData;
+        
+        try {
+            updatedData = JSON.parse(currentJsonData);
+        } catch (e) {
+            alert("Error parsing JSON data. Please ensure the data is valid.");
+            return;
+        }
+
+        // Get the current HTML content
+        const currentHtml = document.documentElement.outerHTML;
+        
+        // Replace the const data array with updated data
+        const updatedHtml = currentHtml.replace(
+            /const data = \[[\s\S]*?\];/,
+            `const data = ${JSON.stringify(updatedData, null, 8)};`
+        );
+
+        // Create blob and download
+        const blob = new Blob([updatedHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'InfoViewer_Updated.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 
 
